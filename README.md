@@ -30,9 +30,9 @@ export NAMESPACE=0-fio-build
 
 kubectl create namespace ${NAMESPACE}
 
-kubectl apply -n ${NAMESPACE} -f fioBuildx86_64.yaml
+kubectl apply -n ${NAMESPACE} -f fio-x86_64.yaml
 
-kubectl apply -n ${NAMESPACE} -f fioBuildarm64.yaml
+kubectl apply -n ${NAMESPACE} -f fio-arm64.yaml
 ```
 
 Follow the pods logs to see the progress and get the command to copy the binary to your computer if needed
