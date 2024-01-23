@@ -1,5 +1,5 @@
 # Disk IO tests with fio in Kubernetes
-This repository has a set of tools to build and optionally run [fio](https://github.com/axboe/fio) in Kubernetes pods
+This repository has a set of tools to build and optionally run [fio](https://fio.readthedocs.io/en/latest/fio_doc.html) in Kubernetes pods
 
 ## Get The Binary
 You can skip the build and download the pre-built binary directly from
@@ -43,9 +43,12 @@ kubectl logs -n ${NAMESPACE} pod-fio-arm64 -f
 ```
 
 ## Run the IO tests in the pods
-You can run `fio` directly in the pods and get the Kubernetes node's local disk tested using the pods that were just deployed.
+You can run `fio` directly in the pods and get the Kubernetes node's local disk tested using the pods that were just deployed.</br>
+You can test an externally mounted volume be setting the `--filename` parameter to the mounted volume in the pod.
 
-The examples below runs on the x86_64 pod. It uses json output, 10 concurrent jobs and a 1mb block size, and saves the output in a local file for analysis later
+See the [official fio website](https://fio.readthedocs.io/en/latest/fio_doc.html) for all the available options and parameters.
+
+The examples below runs in the running `x86_64` pod. It uses json output, 10 concurrent jobs, 1mb block size, and saves the output in a local file for analysis later
 ```shell
 mkdir -p out
 
