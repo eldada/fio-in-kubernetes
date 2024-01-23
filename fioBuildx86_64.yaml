@@ -1,0 +1,39 @@
+###########################################################
+## This file has the configuration for
+## An Ubuntu pod that downloads and builds fio from sources
+###########################################################
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-fio-x86-64
+spec:
+  containers:
+    - name: ubuntu
+      image: ubuntu:23.10
+      command:
+        - 'bash'
+        - '-c'
+        - >
+          echo "############# Setting up the tools #############";
+          apt update && apt install vim curl git jq apache2-utils make gcc g++ git libaio-dev libaio1 zlib1g-dev -y;
+          echo "############# Cloning fio sources #############";
+          cd; git clone https://github.com/axboe/fio.git;
+          echo "############# Building fio #############";
+          cd fio/; ./configure --build-static && make && make install;
+          echo "############# Uname -a #############";
+          uname -a;
+          echo "############# Testing fio is working (/usr/local/bin/fio --version) #############";
+          /usr/local/bin/fio --version;
+          echo "############# Command top copy it to your machine #############";
+          echo "kubectl cp -n $(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace) ${HOSTNAME}:/usr/local/bin/fio ./fio-linux-x86_64";
+          echo "############# Done. Sleeping for a day #############";
+          sleep 1d
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                  - amd64
