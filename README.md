@@ -13,7 +13,8 @@ curl -L -O https://eldada.jfrog.io/artifactory/tools/fio/3.36/fio-linux-x86_64
 curl -L -O https://eldada.jfrog.io/artifactory/tools/fio/3.36/fio-linux-arm64
 ```
 
-## Build fio in Kubernetes
+## Build of Install fio in a Kubernetes pod
+### Build fio from sources
 Building `fio` requires the same processor architecture of the server you'll be running the tests on.</br>
 This repository includes two pods templates that deploy to the current Kubernetes cluster and are assigned to a node with the desired architecture.</br>
 The pod comes up and
@@ -22,6 +23,10 @@ The pod comes up and
 3. Compiles and builds `fio` (with `--build-static` so you have the dependencies built into the binary)
 
 Once built, you can then copy the `fio` binary from the pod and take it anywhere. 
+
+### Install fio
+If you just want `fio` in the pod, you can just set the environment variable `BUILD_OR_INSTALL` in the yamls to `install` and deploy.</br>
+This will install `fio` with `apt`.
 
 Deploy the pods with the following commands.<br>
 Make sure to set affinity and toleration rules as needed to make sure you get the right architecture binary built.

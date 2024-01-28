@@ -1,7 +1,9 @@
-###########################################################
-## This file has the configuration for
-## An Ubuntu pod that downloads and builds fio from sources
-###########################################################
+##################################################################
+## An Ubuntu pod that builds fio from sources or installs with apt
+##
+## Set the action be setting environment variable BUILD_OR_INSTALL
+## to "build" or "install"
+##################################################################
 apiVersion: v1
 kind: Pod
 metadata:
@@ -10,22 +12,38 @@ spec:
   containers:
     - name: ubuntu
       image: ubuntu:23.10
+      env:
+        - name: BUILD_OR_INSTALL
+          value: "build"
       command:
         - 'bash'
         - '-c'
         - >
           echo "############# Setting up the tools #############";
-          apt update && apt install vim curl git jq apache2-utils make gcc g++ git libaio-dev libaio1 zlib1g-dev -y;
-          echo "############# Cloning fio sources #############";
-          cd; git clone https://github.com/axboe/fio.git;
-          echo "############# Building fio #############";
-          cd fio/; ./configure --build-static && make && make install;
+          apt update && apt install vim curl git jq apache2-utils -y;
+          if [[ "${BUILD_OR_INSTALL}" =~ "build" ]]; then
+            echo "############# Building fio from sources #############";
+            echo "############# Installing tools needed to build fio #############";
+            apt install make gcc g++ git libaio-dev libaio1 zlib1g-dev -y;
+            echo "############# Cloning fio sources #############";
+            cd; git clone https://github.com/axboe/fio.git;
+            echo "############# Building fio #############";
+            cd fio/; ./configure --build-static && make && make install;
+          elif [[ "${BUILD_OR_INSTALL}" =~ "install" ]]; then
+            echo "############# Installing fio #############";
+            apt install fio -y;
+          else
+            echo "ERROR: BUILD_OR_INSTALL: ${BUILD_OR_INSTALL} not supported";
+            exit 1;
+          fi;
           echo "############# Uname -a #############";
           uname -a;
-          echo "############# Testing fio is working (/usr/local/bin/fio --version) #############";
-          /usr/local/bin/fio --version;
-          echo "############# Command top copy it to your machine #############";
-          echo "kubectl cp -n $(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace) ${HOSTNAME}:/usr/local/bin/fio ./fio-linux-x86_64";
+          echo "############# Testing fio is working (fio --version) #############";
+          fio --version;
+          if [[ "${BUILD_OR_INSTALL}" =~ "build" ]]; then
+            echo "############# Command top copy it to your machine #############";
+            echo "kubectl cp -n $(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace) ${HOSTNAME}:/usr/local/bin/fio ./fio-linux-x86_64";
+          fi;
           echo "############# Done. Sleeping for a day #############";
           sleep 1d
   affinity:
