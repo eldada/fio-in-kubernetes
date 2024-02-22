@@ -5,12 +5,22 @@ This repository has a set of tools to build and optionally run [fio](https://fio
 You can skip the build and download the pre-built binary directly from
 - x86_64
 ```shell
-curl -L -O https://eldada.jfrog.io/artifactory/tools/fio/3.36/fio-linux-x86_64
+# Get file and make it executable
+curl -L https://eldada.jfrog.io/artifactory/tools/fio/3.36/fio-linux-x86_64 -o ./fio
+chmod +x fio
+
+# Test it works
+./fio --version
 ```
 
 - ARM
 ```shell
-curl -L -O https://eldada.jfrog.io/artifactory/tools/fio/3.36/fio-linux-arm64
+# Get file and make it executable
+curl -L https://eldada.jfrog.io/artifactory/tools/fio/3.36/fio-linux-arm64 -o ./fio
+chmod +x fio
+
+# Test it works
+./fio --version
 ```
 
 ## Build of Install fio in a Kubernetes pod
